@@ -1,6 +1,4 @@
 
-
-
 function AllList() {
 
   // 擬似配列(生徒一覧データ)
