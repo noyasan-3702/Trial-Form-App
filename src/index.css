@@ -1,0 +1,99 @@
+
+/*================================================================================*/
+/* メニューのレイアウト*/
+
+a:-webkit-any-link  {
+  text-decoration: none;
+}
+
+.menu-area {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(100% / 3);
+  height: 100%;
+  background-color:#f5f5f5;
+  border-right: 2px solid #000; /* 1px の黒い実線を引く */
+}
+
+.link-box {
+  display: flex;
+  align-items: center; /* 垂直方向に中央揃え */
+}
+
+.link-icon {
+  margin-left: 50px;
+  margin-right: 35px;
+}
+
+.link-box h1 {
+  color:#000 ;
+}
+
+/*================================================================================*/
+/* 生徒一覧のレイアウト*/
+
+.AllList {
+  position: fixed;
+  top: 0;
+  left: calc(100% / 3);
+  width: calc(100% * 2 / 3);
+  height: 100%;
+}
+
+.team-label {
+  display: flex;
+  align-items: center; /* 垂直方向に中央揃え */
+  margin-right: 20px;
+}
+.team-label h3 {
+  margin-left: 20px;
+}
+
+.List-area {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.List-area table {
+  table-layout: fixed;
+  width: 100%;
+  border: 1px solid white;
+}
+.List-area th {
+  background-color:#0277BD;
+  color: white;
+}
+.List-area tr{
+  height: 60px;
+  background-color:#F0F0F0;
+}
+
+.List-area .editbtn {
+  padding: 10px 25px 10px 35px;
+  background-color:white;
+  color: #4199CD;
+  border: 1px solid #4199CD;
+  border-radius: 8px;
+  letter-spacing: 10px;
+}
+.List-area .deletebtn {
+  padding: 10px 25px 10px 35px;
+  background-color:white;
+  color: #FF8383;
+  border: 1px solid	#FF8383;
+  border-radius: 8px;
+  letter-spacing: 10px;
+}
+
+
+/*================================================================================*/
+/* 体験者情報のレイアウト*/
+
+.ExperiencerList {
+  position: fixed;
+  top: 0;
+  left: calc(100% / 3);
+  width: calc(100% * 2 / 3);
+  height: 100%;
+}
