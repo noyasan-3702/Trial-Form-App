@@ -6,12 +6,9 @@ import { FaPersonWalking } from "react-icons/fa6";
 import { GoPeople } from "react-icons/go";
 import { GoPersonAdd } from "react-icons/go";
 import { BsQrCode } from "react-icons/bs";
-
 import Dashboard from './dashboard';
-
 import ExperiencerList from './ExperiencerList';
 import AllList from './AllList';
-
 import './App.css'
 
 function App() {
