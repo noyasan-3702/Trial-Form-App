@@ -1,12 +1,22 @@
-
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import db from "./firebase";
+import './App.css'
 
 function ExperiencerList() {
+  const [ posts, setPosts ] = useState<any>([])
 
-    // 擬似配列
-    const Experiencers = [
-      { ExperienceDay: "2025/02/13", team: 'FCバルセロナ', name: '水野谷 一樹', kana: 'ミズノヤ カズキ', grade: 6 },
-      // 他の生徒データも同様にデータベースから全て追加
-    ];
+  // 初回読み込み
+  useEffect(() => {
+    // 体験者情報データベースにアクセス
+    const postData = collection(db, "体験者情報")
+
+    // データを取得できたら、配列内にデータを格納
+    getDocs(postData).then((snapShot) => {
+      console.log(snapShot.docs.map((doc) => ({ ...doc.data() })))
+      setPosts(snapShot.docs.map((doc) => ({ ...doc.data() })));
+    });
+  }, []);
   
     return (
       <>
@@ -26,13 +36,13 @@ function ExperiencerList() {
                 </tr>
               </thead>
               <tbody>
-                {Experiencers.map((Experiencer, index) => (
-                  <tr key={index}>
-                    <td>{Experiencer.ExperienceDay}</td>    {/* データベースから氏名を取得 */}
-                    <td>{Experiencer.name}</td>             {/* データベースから氏名を取得 */}
-                    <td>{Experiencer.kana}</td>             {/* データベースからフリガナを取得 */}
-                    <td>{Experiencer.grade}</td>            {/* データベースから学年を取得 */}
-                    <td>{Experiencer.team}</td>             {/* データベースからチーム名を取得 */}
+                {posts.map((post:any) => (
+                  <tr>
+                    <td>{post.Experience}</td>  {/* データベースから体験日を取得 */}
+                    <td>{post.Name}</td>        {/* データベースから氏名を取得 */}
+                    <td>{post.Kana}</td>        {/* データベースからフリガナを取得 */}
+                    <td>{post.Grade}</td>       {/* データベースから学年を取得 */}
+                    <td>{post.Team}</td>        {/* データベースからチーム名を取得 */}
                   </tr>
                 ))}
               </tbody>

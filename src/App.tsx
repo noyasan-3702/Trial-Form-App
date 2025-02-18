@@ -15,7 +15,7 @@ function App() {
 
   return (
     <>
-    <Router>
+    <Router basename="/School-App">
       <div className="menu-area">
         <nav>
           <Link to="/Dashboard">
