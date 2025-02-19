@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
+import { IconContext } from 'react-icons' //IconContextをインポート
+import { BsFillTriangleFill } from "react-icons/bs";
 import db from "./firebase";
 import './App.css'
 
@@ -28,11 +30,66 @@ function ExperiencerList() {
             <table>
               <thead>
                 <tr>
-                  <th>体験日</th>  
-                  <th>氏名</th>
-                  <th>フリガナ</th>
-                  <th>学年</th>
-                  <th>所属チーム</th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          体験日
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          氏名
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          フリガナ
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          学年
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          所属チーム
+                        </label>
+                      </label>
+                    </div>
+                  </th>
                 </tr>
               </thead>
               <tbody>

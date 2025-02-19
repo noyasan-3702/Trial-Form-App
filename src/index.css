@@ -1,5 +1,126 @@
 
 /*================================================================================*/
+/* テーブルアイコン・サブタイトルのレイアウト*/
+
+.table-link-box {
+  display: flex;
+  align-items: center; /* 垂直方向に中央揃え */
+}
+
+.table-link-icon {
+  margin: 0 auto;
+}
+
+.table-link-text {
+  margin-left: 5px;
+}
+
+.List-area .SubTitle-area {
+  text-align: left;
+}
+
+.SubTitle-area h2 {
+  margin-top: 50px;
+  margin-bottom: 0px;
+}
+
+
+/*================================================================================*/
+/* ポップアップのレイアウト*/
+
+.Popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9998;
+}
+
+.Add-popup {
+  width: 450px;
+  color: #000;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
+}
+.Edit-popup {
+  width: 450px;
+  color: #000;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
+}
+.Delete-popup {
+  width: 450px;
+  color: #000;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
+}
+
+.Header-title {
+  margin-top: 50px;
+}
+
+.Body-element {
+  text-align: left;
+  margin-left: 80px;
+  margin-right: 80px;
+}
+.Body-element .SubTitle {
+  margin-bottom: 0;
+}
+.Body-element .inputer1 {
+  width: 100%;
+}
+.Popup-button {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+.Popup-button .editbtn {
+  padding: 10px 15px 10px 15px;
+  background-color:#0277BD;
+  color: #ffffff;
+  border: 1px solid #0277BD;
+  border-radius: 8px;
+  letter-spacing: 00.5px;
+}
+
+.PopupClosebtn {
+  padding: 0px 7px 0px 7px;
+  margin-top: -40px;
+  margin-right: 15px;
+  color: #ffffff;
+  background: #ff0000;
+  float: right;
+  border-radius: 100px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+.PopupClosebtn:hover,
+.PopupClosebtn:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/*================================================================================*/
 /* メニューのレイアウト*/
 
 a:-webkit-any-link  {
@@ -50,6 +171,16 @@ a:-webkit-any-link  {
   margin-left: 20px;
 }
 
+
+.button-area {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.button-area .SubTitle-area {
+  text-align: left;
+}
+
+
 .List-area {
   margin-left: 20px;
   margin-right: 20px;
@@ -59,6 +190,7 @@ a:-webkit-any-link  {
   table-layout: fixed;
   width: 100%;
   border: 1px solid white;
+  font-size: 13px;
 }
 .List-area th {
   background-color:#0277BD;
@@ -118,4 +250,45 @@ a:-webkit-any-link  {
   border: 1px solid #4199CD;
   border-radius: 8px;
   letter-spacing: 10px;
+}
+
+/*================================================================================*/
+/* 出席確認のレイアウト*/
+
+.TakeAttendance-List {
+  position: fixed;
+  top: 0;
+  left: calc(100% / 3);
+  width: calc(100% * 2 / 3);
+  height: 100%;
+}
+
+.List-area .changebtn {
+  padding: 10px 8px 10px 8px;
+  background-color:white;
+  color: #4199CD;
+  border: 1px solid #4199CD;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  font-size: 11px;
+}
+.changebtn.active {
+  padding: 10px 8px 10px 8px;
+  background-color:white;
+  color: #FF8383;
+  border: 1px solid	#FF8383;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  font-size: 11px;
+}
+
+/*================================================================================*/
+/* 出席データ詳細のレイアウト*/
+
+.Attendance-List {
+  position: fixed;
+  top: 0;
+  left: calc(100% / 3);
+  width: calc(100% * 2 / 3);
+  height: 100%;
 }

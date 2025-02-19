@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { IconContext } from 'react-icons' //IconContextをインポート
+import { BsFillTriangleFill } from "react-icons/bs";
 import './App.css'
 
 function Dashboard() {
@@ -32,64 +34,155 @@ function Dashboard() {
   };
 
     return (
-        <>
-        <div className="Dashboard-List">
-            <div className="TodayData-area">
-                <div className="Title-area">
-                    <h1>当日データ</h1>
-                </div>
-                <div className="List-area"> 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>日付</th>
-                                <th>出席人数</th>
-                                <th>合計金額</th>
-                                <th>詳細</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {DayData.map((daydata, index) => (
-                            <tr key={index}>
-                                <td>{formatDate}</td>       {/* 関数から当日の日付を取得 */}
-                                <td>{daydata.People}</td>   {/* データベースからフリガナを取得 */}
-                                <td>{daydata.Amount}</td>   {/* データベースから学年を取得 */}
-                                <td><button className="detailbtn" onClick={AttendanceListGo}>データ詳細</button></td>
-                            </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div className="PastData-area">
-                <div className="Title-area">
-                    <h1>過去データ</h1>
-                </div>
-                <div className="List-area"> 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>日付</th>
-                                <th>出席人数</th>
-                                <th>合計金額</th>
-                                <th>詳細</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {PastData.map((pastdata, index) => (
-                            <tr key={index}>
-                                <td>{pastdata.Pastday}</td>   {/* データベースから過去の日付を取得 */}
-                                <td>{pastdata.People}</td>    {/* データベースからフリガナを取得 */}
-                                <td>{pastdata.Amount}</td>    {/* データベースから学年を取得 */}
-                                <td><button className="detailbtn" onClick={AttendanceListGo}>データ詳細</button></td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+      <>
+      <div className="Dashboard-List">
+        <div className="Title-area">
+          <h1>ダッシュボード</h1>
         </div>
-        </>
+        <div className="TodayData-area">
+          <div className="List-area"> 
+            <div className="SubTitle-area">
+              <h2>当日データ</h2>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          日付
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          出席人数
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          合計人数
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                            詳細
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {DayData.map((daydata, index) => (
+                  <tr key={index}>
+                  <td>{formatDate}</td>       {/* 関数から当日の日付を取得 */}
+                  <td>{daydata.People}</td>   {/* データベースからフリガナを取得 */}
+                  <td>{daydata.Amount}</td>   {/* データベースから学年を取得 */}
+                  <td><button className="detailbtn" onClick={AttendanceListGo}>データ詳細</button></td>
+                </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className="PastData-area">
+            <div className="List-area">
+              <div className="SubTitle-area">
+                <h2>過去データ</h2>
+              </div> 
+            <table>
+              <thead>
+                <tr>
+                <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          日付
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          出席人数
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                          合計人数
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                  <th>
+                    <div className="table-link-box">
+                      <label className="table-link-icon">
+                        <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
+                          <BsFillTriangleFill />
+                        </IconContext.Provider>
+                        <label className="table-link-text">
+                            詳細
+                        </label>
+                      </label>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {PastData.map((pastdata, index) => (
+                <tr key={index}>
+                  <td>{pastdata.Pastday}</td>   {/* データベースから過去の日付を取得 */}
+                  <td>{pastdata.People}</td>    {/* データベースからフリガナを取得 */}
+                  <td>{pastdata.Amount}</td>    {/* データベースから学年を取得 */}
+                  <td><button className="detailbtn" onClick={AttendanceListGo}>データ詳細</button></td>
+                </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      </>
     );
   }
   
