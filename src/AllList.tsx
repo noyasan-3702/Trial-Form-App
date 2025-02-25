@@ -1,69 +1,163 @@
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { useEffect, useState, } from "react";
+import { collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { IconContext } from 'react-icons' //IconContextをインポート
 import { BsFillTriangleFill } from "react-icons/bs";
 import db from "./firebase";
 import './App.css'
 
+interface Student {
+  id: string;
+  Name: string;
+  Kana: string;
+  Grade: number;
+  Team: string;
+  Phone: string;
+  Mail: string;
+}
+
 function AllList() {
-  const [ students, setStudents ] = useState<any>([]);
-  const [ isaddPopupVisible, setIsaddPopupVisible ] = useState(false);        // 新規追加ポップアップの表示・非表示を管理
-  const [ iseditPopupVisible, setIseditPopupVisible ] = useState(false);      // 編集ポップアップの表示・非表示を管理
-  const [ isdeletePopupVisible, setIsdeletePopupVisible ] = useState(false);  // 削除ポップアップの表示・非表示を管理
-  const [ teams, setTeams ] = useState<any>([]);
-  const [ value, setValue ] = useState("");     
-  const [ editStudent, setEditStudent ] = useState([]);                         // 編集したい値を管理
-                               
-  // 初回読み込み
+  const [ students, setStudents ] = useState<any>([]);                            // データベースから取得した全ての生徒の情報を管理
+  const [ isaddPopupVisible, setIsaddPopupVisible ] = useState(false);            // 新規追加ポップアップの表示・非表示を管理
+  const [ iseditPopupVisible, setIseditPopupVisible ] = useState(false);          // 編集ポップアップの表示・非表示を管理
+  const [ isdeletePopupVisible, setIsdeletePopupVisible ] = useState(false);      // 削除ポップアップの表示・非表示を管理
+  const [ teams, setTeams ] = useState<any>([]);                                  // データベース内のチーム名を管理
+  const [, setTeamName ] = useState("");                                          // 表示したいチーム名を管理
+  const [ selectedTeam, setSelectedTeam ] = useState<string | null>(null);        // 選択されたチームを管理する
+  const [ filteredStudents, setFilteredStudents ] = useState<any[]>([]);          // 表示する生徒リストを管理する
+  const [ teamCounts, setTeamCounts ] = useState<{ [team: string]: number }>({}); // チーム内の合計人数を管理する
+  const [ addStudent, setAddStudent ] = useState<Student | null>(null);           // 追加したい生徒の情報を管理する
+  const [ editStudent, setEditStudent ] = useState<Student | null>(null);         // 編集したい生徒の情報を管理する
+  const [ deleteStudent, setDeleteStudent ] = useState<Student | null>(null);     // 削除したい生徒の情報を管理する                  
+
+
+  /** 初回レンタリングの処理
+   * 初回レンタリングの処理の処理となります。
+   * 
+   * 生徒一覧データベースから全ての生徒の情報を取得します。
+   * 
+   * また、チーム名を重複を削除して取り出し、
+   * 編集ポップアップや新規追加ポップアップで使用可能な
+   * ドロップダウンリストのデータを取得しています。
+  */
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Firestore から "生徒一覧" コレクションのデータを取得
-        const studentData = collection(db, "生徒一覧");
-        const Snapshot = await getDocs(studentData);
+        const studentCollection = collection(db, "生徒一覧");
+        const studentSnapshot = await getDocs(studentCollection);
 
-        // 生徒データを取得して State にセット
-        const studentList = Snapshot.docs.map(doc => ({ ...doc.data() }));
+        // Firestore のデータを取得し、id を含めたオブジェクトを作成
+        const studentList: Student[] = studentSnapshot.docs.map(doc => {
+          const data = doc.data() as Omit<Student, "id">; // Student 型から id を除いた型にする
+          return { id: doc.id, ...data };                 // ドキュメントID を含めた Firestore に保存されている生徒データ
+        });
+
+        // 取得したデータを state にセット
         setStudents(studentList);
 
-        // "Team" の値を抽出し、重複を削除
-        const DBTeams = studentList.map(student => student.Team); // "Team" の値を全て取得
-        const uniqueTeams = [...new Set(DBTeams)]; // Set を使って重複を削除
-        setTeams(uniqueTeams);
-        
-        // こんそーるする
-        console.log("取得した生徒一覧:", studentList);
-        console.log("取得したチーム一覧:", uniqueTeams);
+        // "Team" の値を抽出し、重複を削除してデータを state にセット
+        const teamList = [...new Set(studentList.map(student => student.Team))];
+        setTeams(teamList);
+
+        // チームごとの人数を集計して、集計結果を state にセット 
+        const teamCountMap = new Map<string, number>();
+        studentList.forEach((studentList: { Team: string; }) => {
+          if (studentList.Team) {
+            teamCountMap.set(studentList.Team, (teamCountMap.get(studentList.Team) || 0) + 1);
+          }
+        });
+        setTeamCounts(Object.fromEntries(teamCountMap));
+
+        // デバッグ用のログ出力
+        console.log("取得した生徒の一覧:", studentList);
+        console.log("取得したチーム一覧:", teamList);
+        console.log("取得したチームの合計人数:", teamCounts);
       } catch (error) {
         console.error("データの取得中にエラーが発生しました:", error);
       }
     };
 
-    fetchData(); // 関数を実行
+    fetchData();  // 関数を実行
   }, []);
 
+
+  /** 編集ポップアップの処理 
+   * 編集ポップアップの処理となります。
+   * 
+   * 生徒一覧データベースからテーブル内の同じ行内の生徒情報を編集します。
+   * 
+   * 編集可能項目
+   * 氏名、フリガナ、学年、チーム名、連絡先（電話番号）、メールアドレス
+  */
   // 編集ポップアップを開く
   const EditOpenPopup = (student: any) => {
-    setEditStudent(student)
-    setIseditPopupVisible(true);
-    console.log("編集する生徒の情報:", student);
-    console.log("編集する生徒の名前:", editStudent);
-  };
+    setEditStudent(student);      // 編集したい生徒の情報を格納
+    setIseditPopupVisible(true);  // 編集ポップアップを開く
+  }
 
   // 編集ポップアップを閉じる
   const EditClosePopup = () => {
     setIseditPopupVisible(false);
   };
 
-  //編集内容を保存する
-  const EditSave = () => {
+  // 入力された内容をリアルタイムで更新
+  const EdithandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (editStudent) {
+      const { name, value } = e.target;
+      setEditStudent({...editStudent, [name]: value});
+    }
+  };
 
-    setIseditPopupVisible(false);
+  //編集内容を保存する
+  const EditHandleSave = async () => {
+    if (!editStudent) return;
+    try {
+      // 更新したいデータベースから編集したい生徒のドキュメントIDを指定
+      const studentEditDocRef = doc(db, "生徒一覧", editStudent.id);
+
+      // 編集したい生徒の情報を取得
+      const studentEditData = {
+        Name: editStudent.Name,
+        Kana: editStudent.Kana,
+        Grade: Number(editStudent.Grade),
+        Team: editStudent.Team,
+        Phone: editStudent.Phone,
+        Mail: editStudent.Mail
+      };
+
+      // データベースの情報を更新
+      await updateDoc( studentEditDocRef, studentEditData );
+
+      // **students の状態を更新して再レンダリング**
+      setStudents((prevStudents: any) => 
+        prevStudents.map((student: { id: string; }) =>
+          student.id === editStudent.id ? { ...student, ...studentEditData } : student
+        )
+      );
+
+      // ポップアップを閉じる
+      setIseditPopupVisible(false);
+    } catch (error) {
+
+      // 更新が失敗したとき
+      alert("データの更新に失敗しました");  // アラートを表示
+      console.error("更新エラー:", error);
+
+      // ポップアップを閉じる
+      setIseditPopupVisible(false);
+    }
   }
 
+    
 
+  /** 新規追加ポップアップの処理 
+   * 新規追加ポップアップの処理となります。
+   * 
+   * 生徒一覧データベースに新規で生徒の情報を追加します。
+  */
   // 新規追加ポップアップを開く
-  const AddOpenPopup = () => {
+  const AddOpenPopup = (student: any) => {
+    setAddStudent(student);
     setIsaddPopupVisible(true);
   };
 
@@ -72,16 +166,65 @@ function AllList() {
     setIsaddPopupVisible(false);
   };
 
-  //新規追加した生徒の情報を保存する
-  const AddSave = () => {
+  // 入力された内容をリアルタイムで更新
+  const AddhandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (addStudent) {
+      const { name, value } = e.target;
+      setAddStudent({...addStudent, [name]: value});
+    }
+  };
 
-    setIsaddPopupVisible(false);
+  //新規追加した生徒の情報を保存する
+  const AddHandleSave = async () => {
+    if (!addStudent) return;
+    try {
+
+      // 新規追加したいデータベースを指定
+      const studentAddDocRef = collection(db, "生徒一覧");
+
+      // 新規追加したい生徒の情報を取得
+      const studentAddData = {
+        Name: addStudent.Name,
+        Kana: addStudent.Kana,
+        Grade: Number(addStudent.Grade),
+        Team: addStudent.Team,
+        Phone: addStudent.Phone,
+        Mail: addStudent.Mail
+      };
+
+      // 生徒一覧データベースに生徒の情報を新規追加する
+      await addDoc( studentAddDocRef, studentAddData );
+
+      // **students の状態を更新して再レンダリング**
+      setStudents((prevStudents: any) => 
+        prevStudents.map((student: { id: string; }) =>
+          student.id === addStudent.id ? { ...student, ...studentAddData } : student
+        )
+      );
+      // ポップアップを閉じる
+      setIsaddPopupVisible(false);
+
+    } catch (error) {
+
+      // 新規追加が失敗したとき
+      console.error("生徒の追加に失敗しました:", error);
+      alert("生徒の追加に失敗しました");
+
+      // ポップアップを閉じる
+      setIsaddPopupVisible(false);
+    }
   }
 
 
+
+  /** 削除ポップアップの処理 
+   * 削除ポップアップの処理となります。
+   * 
+   * 生徒一覧データベースからテーブル内の同じ行内の生徒情報を削除します。
+  */
   // 削除ポップアップを開く
   const DeleteOpenPopup = (student: any) => {
-
+    setDeleteStudent(student)
     setIsdeletePopupVisible(true);
   };
 
@@ -91,10 +234,51 @@ function AllList() {
   };
 
   //生徒の情報を削除する
-  const DeleteExecution = () => {
-    
-    setIsdeletePopupVisible(false);
+  const DeleteExecution = async () => {
+    if (!deleteStudent) return;
+    try {
+      // 生徒一覧 のデータベースから指定した生徒の情報をを削除
+      await deleteDoc(doc(db, "生徒一覧", deleteStudent.id));
+
+      // `students` の状態を更新して、削除されたデータを UI からも消す
+      setStudents((prevStudents: any) => 
+        prevStudents.filter((student: { id: string; }) => 
+        student.id !== deleteStudent.id)
+      );
+
+      // ポップアップを閉じる
+      setIsdeletePopupVisible(false);
+    } catch (error) {
+
+      // 削除が失敗したとき
+      alert("データの更新に失敗しました");  // アラートを表示
+      console.error("更新エラー:", error);
+
+      // ポップアップを閉じる
+      setIsdeletePopupVisible(false);
+    }
   }
+
+
+  // チームラベル色の設定処理
+  const LabelBackColor = [ "#FFA7A7", "	#FFD9AE", "#ACDFFF", "#8CB1FF", "	#8ACF94", "	#98E1E3", "#FFF2A6", "#ffc0cb", "#9370db", "#eee8aa" ] 
+
+
+  /**チームごとのフィルタリング処理
+   * チームラベルのクリック時にクリックしたチームの生徒をテーブルに表示
+   */
+  // 
+  const handleTeamClick = (team: string) => {
+    // 選択したチーム名を取得
+    setSelectedTeam(team);
+    console.log('選択されたチーム名',team);
+
+    // 選択されたチームの生徒の情報を配列内に格納
+    setFilteredStudents(
+      students.filter((student: { Team: string; }) =>student.Team === team) 
+    );
+    console.log('フィルタリングされた生徒の情報',students.filter((student: { Team: string; }) =>student.Team === team));
+  };
 
   return (
     <>
@@ -111,20 +295,23 @@ function AllList() {
                 <div className="Popup-body">
                   <div className="Body-element">
                     <h4 className="SubTitle">氏名</h4>
-                    <input type="text" className="inputer1" />
+                    <input type="text" name="Name" value={addStudent?.Name} onChange={AddhandleChange} className="inputer1" />
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">フリガナ</h4>
-                    <input type="text" className="inputer1" />
+                    <input type="text" name="Kana" value={addStudent?.Kana} onChange={AddhandleChange} className="inputer1" />
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">学年</h4>
-                    <input type="number" value="4" min="1" max="6" className="inputer2" />
+                    <input type="number" name="Grade" value={addStudent?.Grade} onChange={AddhandleChange} min="1" max="6" className="inputer2" />
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">チーム</h4>
-                    <input list="teams" value={value} 
-                      onChange={(e) => setValue(e.target.value)} 
+                    <input list="teams" name="Team" value={addStudent?.Team}   
+                      onChange={(e) => {
+                        AddhandleChange(e);           // 内容を一時保存(配列内に格納)
+                        setTeamName(e.target.value);  // チーム名を取得
+                      }} 
                       placeholder="選択または入力" className="inputer1" 
                     />
                     <datalist id="teams">
@@ -135,14 +322,14 @@ function AllList() {
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">連絡先</h4>
-                    <input type="tel" className="inputer1" />
+                    <input type="tel" name="Phone" value={addStudent?.Phone} onChange={AddhandleChange} className="inputer1" />
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">メールアドレス</h4>
-                    <input type="email" className="inputer1" />
+                    <input type="email" name="Mail" value={addStudent?.Mail} onChange={AddhandleChange} className="inputer1" />
                   </div>
                   <div className="Popup-button">
-                    <button className="addbtn" onClick={AddSave}>新規追加する</button>
+                    <button className="addbtn" onClick={AddHandleSave}>新規追加する</button>
                   </div>
                 </div>
               </div>
@@ -158,25 +345,24 @@ function AllList() {
                 </div>
                 <div className="Popup-body">
                   <div className="Body-element">
-                    <h4 className="SubTitle">ID</h4>
-                    <div></div>
-                  </div>
-                  <div className="Body-element">
                     <h4 className="SubTitle">氏名</h4>
-                    <input type="text" className="inputer1" />
+                    <input type="text" name="Name"  value={editStudent?.Name || ""} onChange={EdithandleChange} className="inputer1" />
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">フリガナ</h4>
-                    <input type="text" className="inputer1" />
+                    <input type="text" name="Kana" value={editStudent?.Kana || ""} onChange={EdithandleChange} className="inputer1" />
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">学年</h4>
-                    <input type="number" min="1" max="6" className="inputer2" />
+                    <input type="number" name="Grade" value={editStudent?.Grade || ""} onChange={EdithandleChange} min="1" max="6" className="inputer2" />
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">チーム</h4>
-                    <input list="teams" value={value} 
-                      onChange={(e) => setValue(e.target.value)} 
+                    <input list="teams" name="Team" value={editStudent?.Team || ""} 
+                      onChange={(e) => {
+                        EdithandleChange(e);          // 編集内容を一時保存(配列内に格納)
+                        setTeamName(e.target.value);  // チーム名を取得
+                      }} 
                       placeholder="選択または入力" className="inputer1" 
                     />
                     <datalist id="teams">
@@ -187,14 +373,14 @@ function AllList() {
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">連絡先</h4>
-                    <input type="tel" className="inputer1" />
+                    <input type="tel" name="Phone" value={editStudent?.Phone || ""} onChange={EdithandleChange} className="inputer1" />
                   </div>
                   <div className="Body-element">
                     <h4 className="SubTitle">メールアドレス</h4>
-                    <input type="email" className="inputer1" />
+                    <input type="email" name="Mail" value={editStudent?.Mail || ""} onChange={EdithandleChange} className="inputer1" />
                   </div>
                   <div className="Popup-button">
-                    <button className="editbtn" onClick={EditSave}>編集内容を確定する</button>
+                    <button className="editbtn" onClick={EditHandleSave}>編集内容を確定する</button>
                   </div>
                 </div>
               </div>
@@ -205,10 +391,13 @@ function AllList() {
             <div className="Popup-overlay">
               <div className="Delete-popup">
                 <div className="Popup-body">
-                  <h4 className="DeleteName">{`~~~を削除します。\nよろしいですか。`}</h4>
+                  <div className="DeleteName">
+                    <p>{deleteStudent?.Name}を削除します。</p>
+                    <p>よろしいですか？</p>
+                  </div>
                   <div className="Popup-button">
-                    <button onClick={DeleteExecution}>はい</button>
-                    <button onClick={DeleteClosePopup}>キャンセル</button>
+                    <button className="deletebtn" onClick={DeleteExecution}>はい</button>
+                    <button className="cancelbtn" onClick={DeleteClosePopup}>キャンセル</button>
                   </div>
                 </div>
               </div>
@@ -217,19 +406,21 @@ function AllList() {
         </div>
         <div className="Title-area">
           <h1>生徒一覧</h1>
+          <button className="addbtn" onClick={AddOpenPopup}>＋生徒追加</button>
         </div>
         <div className="button-area">
           <div className="SubTitle-area">
             <h2>チーム一覧</h2>
           </div>
-          <div className="team-label">
-            <label>
-              {/* 登録されているチーム名をデータベースから全て取得 */}
-            </label>
-            <label>
-              {/* 所属チームの合計人数を取得 */}
-            </label>
-          </div>
+          {/* 登録されているチーム名とそのチーム所属している合計人数をデータベースから全て取得 */}
+          {Object.entries(teamCounts).map(([team, count], index) => (
+            <button key={team} className="team-label" 
+             style={{ backgroundColor: LabelBackColor[index % LabelBackColor.length] }} // ボタンの数が配列内の色の数より多くなっても、繰り返して色を適用
+             onClick={() => handleTeamClick(team)}
+            >
+              <div>{`${team} (${count})`}</div>
+            </button>
+          ))}
         </div>
         <div className="List-area">
           <div className="SubTitle-area">
@@ -313,7 +504,8 @@ function AllList() {
               </tr>
             </thead>
             <tbody>
-              {students.map((student: any) => (
+               {/* 初回表示は `students`、ボタンが押されたら `filteredStudents` でそれぞれ表示する*/}
+              {(selectedTeam ? filteredStudents : students).map((student: any) => (
                 <tr key={student.id}>
                   <td>{student.Name}</td>   {/* データベースから氏名を取得 */}
                   <td>{student.Kana}</td>   {/* データベースからフリガナを取得 */}

@@ -28,6 +28,7 @@
 /*================================================================================*/
 /* ポップアップのレイアウト*/
 
+/* ======共通部分=======*/
 .Popup-overlay {
   position: fixed;
   top: 0;
@@ -39,65 +40,6 @@
   justify-content: center;
   align-items: center;
   z-index: 9998;
-}
-
-.Add-popup {
-  width: 450px;
-  color: #000;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-shadow: none;
-}
-.Edit-popup {
-  width: 450px;
-  color: #000;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-shadow: none;
-}
-.Delete-popup {
-  width: 450px;
-  color: #000;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-shadow: none;
-}
-
-.Header-title {
-  margin-top: 50px;
-}
-
-.Body-element {
-  text-align: left;
-  margin-left: 80px;
-  margin-right: 80px;
-}
-.Body-element .SubTitle {
-  margin-bottom: 0;
-}
-.Body-element .inputer1 {
-  width: 100%;
-}
-.Popup-button {
-  margin-top: 50px;
-  margin-bottom: 50px;
-}
-.Popup-button .editbtn {
-  padding: 10px 15px 10px 15px;
-  background-color:#0277BD;
-  color: #ffffff;
-  border: 1px solid #0277BD;
-  border-radius: 8px;
-  letter-spacing: 00.5px;
 }
 
 .PopupClosebtn {
@@ -119,6 +61,112 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.Header-title {
+  margin-top: 50px;
+}
+.Popup-button {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+
+/* ======新規追加=======*/
+.Add-popup {
+  width: 450px;
+  color: #000;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
+}
+
+.Add-popup .addbtn {
+  padding: 10px 15px 10px 15px;
+  background-color:#0277BD;
+  color: #ffffff;
+  border: 1px solid #0277BD;
+  border-radius: 8px;
+  letter-spacing: 00.5px;
+  cursor: pointer;
+}
+
+
+/* ======編集=======*/
+.Edit-popup {
+  width: 450px;
+  color: #000;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
+}
+
+.Body-element {
+  text-align: left;
+  margin-left: 80px;
+  margin-right: 80px;
+}
+.Body-element .SubTitle {
+  margin-bottom: 0;
+}
+.Body-element .inputer1 {
+  width: 100%;
+}
+
+.Edit-popup .Popup-button .editbtn {
+  padding: 10px 15px 10px 15px;
+  background-color:#0277BD;
+  color: #ffffff;
+  border: 1px solid #0277BD;
+  border-radius: 8px;
+  letter-spacing: 00.5px;
+  cursor: pointer;
+}
+
+
+/* ======削除=======*/
+.Delete-popup {
+  width: 450px;
+  color: #000;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
+}
+
+.Delete-popup .Popup-button .deletebtn {
+  padding: 10px 15px 10px 15px;
+  margin-left: 15px;
+  margin-right: 15px;
+  width: 110px;
+  background-color:#0277BD;
+  color: #ffffff;
+  border: 1px solid #0277BD;
+  border-radius: 8px;
+  letter-spacing: 00.5px;
+  cursor: pointer;
+}
+
+.Delete-popup .Popup-button .cancelbtn {
+  padding: 10px 15px 10px 15px;
+  margin-left: 15px;
+  margin-right: 15px;
+  width: 110px;
+  background-color:white;
+  color: #0277BD;
+  border: 1px solid #0277BD;
+  border-radius: 8px;
+  letter-spacing: 00.5px;
+  cursor: pointer;
+}
+
 
 /*================================================================================*/
 /* メニューのレイアウト*/
@@ -162,28 +210,51 @@ a:-webkit-any-link  {
   height: 100%;
 }
 
-.team-label {
-  display: flex;
-  align-items: center; /* 垂直方向に中央揃え */
-  margin-right: 20px;
-}
-.team-label h3 {
-  margin-left: 20px;
+
+.Title-area .addbtn {
+  float: right;
+  margin-top: -70px;
+  margin-right: 30px;
+  padding: 10px 15px 10px 15px;
+  background-color:#0277BD;
+  color: #ffffff;
+  border: 1px solid #0277BD;
+  border-radius: 8px;
+  letter-spacing: 00.5px;
+  cursor: pointer;
 }
 
 
 .button-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;  /* 要素間の余白 */
   margin-left: 20px;
   margin-right: 20px;
-}
-.button-area .SubTitle-area {
   text-align: left;
 }
+.button-area .SubTitle-area {
+  margin-left: 5px;
+  width: 100%;
+}
 
+.button-area .team-label {
+  align-items: center; /* 垂直方向に中央揃え */
+  padding: 10px 30px 10px 20px;
+  border-radius: 8px;
+  margin-left: 5px;
+  margin-right: 20px;
+  border: none;
+  font-size: 17px;
+  cursor: pointer;
+}
 
 .List-area {
   margin-left: 20px;
   margin-right: 20px;
+}
+.List-area .SubTitle-area {
+  margin-left: 5px;
 }
 
 .List-area table {
@@ -208,6 +279,7 @@ a:-webkit-any-link  {
   border: 1px solid #4199CD;
   border-radius: 8px;
   letter-spacing: 10px;
+  cursor: pointer;
 }
 .List-area .deletebtn {
   padding: 10px 25px 10px 35px;
@@ -216,6 +288,7 @@ a:-webkit-any-link  {
   border: 1px solid	#FF8383;
   border-radius: 8px;
   letter-spacing: 10px;
+  cursor: pointer;
 }
 
 
@@ -271,6 +344,7 @@ a:-webkit-any-link  {
   border-radius: 8px;
   letter-spacing: 0.5px;
   font-size: 11px;
+  cursor: pointer;
 }
 .changebtn.active {
   padding: 10px 8px 10px 8px;
