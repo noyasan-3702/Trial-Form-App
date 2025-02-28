@@ -1,7 +1,5 @@
 import { useEffect, useState, } from "react";
 import { collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
-import { IconContext } from 'react-icons' //IconContextをインポート
-import { BsFillTriangleFill } from "react-icons/bs";
 import db from "./firebase";
 import './App.css'
 
@@ -28,6 +26,7 @@ function AllList() {
   const [ addStudent, setAddStudent ] = useState<Student | null>(null);           // 追加したい生徒の情報を管理する
   const [ editStudent, setEditStudent ] = useState<Student | null>(null);         // 編集したい生徒の情報を管理する
   const [ deleteStudent, setDeleteStudent ] = useState<Student | null>(null);     // 削除したい生徒の情報を管理する                  
+  const [ sortConfig, setSortConfig ] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
 
 
   /** 初回レンタリングの処理
@@ -79,6 +78,7 @@ function AllList() {
 
     fetchData();  // 関数を実行
   }, []);
+
 
 
   /** 編集ポップアップの処理 
@@ -260,14 +260,15 @@ function AllList() {
   }
 
 
-  // チームラベル色の設定処理
-  const LabelBackColor = [ "#FFA7A7", "	#FFD9AE", "#ACDFFF", "#8CB1FF", "	#8ACF94", "	#98E1E3", "#FFF2A6", "#ffc0cb", "#9370db", "#eee8aa" ] 
-
 
   /**チームごとのフィルタリング処理
    * チームラベルのクリック時にクリックしたチームの生徒をテーブルに表示
    */
   // 
+  // チームラベル色の設定処理
+  const LabelBackColor = [ "#FFA7A7", "	#FFD9AE", "#ACDFFF", "#8CB1FF", "	#8ACF94", "	#98E1E3", "#FFF2A6", "#ffc0cb", "#9370db", "#eee8aa" ] 
+
+  // チームラベルのボタン処理
   const handleTeamClick = (team: string) => {
     // 選択したチーム名を取得
     setSelectedTeam(team);
@@ -279,6 +280,56 @@ function AllList() {
     );
     console.log('フィルタリングされた生徒の情報',students.filter((student: { Team: string; }) =>student.Team === team));
   };
+
+
+
+  /**テーブル内の各項目ごとのソート処理
+   * テーブル内の逆三角のアイコンにソート機能を追加します。
+   * 
+   * アイコンをクリックするごとに「昇順」→「降順」→「昇順」と切り替えを行います。
+   */
+  // ソートボタン処理
+  const handleSort = (key: string) => {
+    setSortConfig((prev) => {
+      if (prev?.key === key) {
+
+        // 「昇順」と「降順」を切り替え
+        return { key, direction: prev.direction === "asc" ? "desc" : "asc" }; 
+      }
+      return { key, direction: "asc" }; // 新しいキーで昇順ソート
+    });
+  };
+
+  // まず既存のフィルター(チームごとのフィルター)を適用する
+  const filteredData = selectedTeam
+    ? filteredStudents.filter((student: any) => student.Team === selectedTeam)
+    : students;
+
+  // 並び替え処理
+  const sortTable = [...filteredData].sort((a, b) => {
+    if (!sortConfig) return 0;  // ソートできる対象項目かを判別する
+
+    const { key, direction } = sortConfig;  // key と direction を 分割代入
+    const valueA = a[key];
+    const valueB = b[key];
+
+    // ソートする項目が数値だった時
+    if (typeof valueA === "number" && typeof valueB === "number") {
+
+      // 数値の大小を比較して並び替える
+      return direction === "asc" ? valueA - valueB : valueB - valueA;
+    }
+    
+    // ソートする項目が文字列だった時
+    if (typeof valueA === "string" && typeof valueB === "string") {
+
+      // 文字列を比較して並び変える
+      return direction === "asc" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+    }
+  
+    return 0;
+  });
+
 
   return (
     <>
@@ -430,72 +481,66 @@ function AllList() {
             <thead>
               <tr>
                 <th>
-                  <div className="table-link-box">
-                    <label className="table-link-icon">
-                      <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
-                        <BsFillTriangleFill />
-                      </IconContext.Provider>
-                      <label className="table-link-text">
+                  <div className="table-label" onClick={() => handleSort("Name")}>
+                    <div className="table-sort-label">
+                      <label className="table-sort-icon">
+                        {sortConfig?.key === "Name" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "▼"}
+                      </label>
+                      <label className="table-sort-text">
                         氏名
                       </label>
-                    </label>
+                    </div>
                   </div>
                 </th>
                 <th>
-                  <div className="table-link-box">
-                    <label className="table-link-icon">
-                      <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
-                        <BsFillTriangleFill />
-                      </IconContext.Provider>
-                      <label className="table-link-text">
+                  <div className="table-label" onClick={() => handleSort("Kana")}>
+                    <div className="table-sort-label">
+                      <label className="table-sort-icon">
+                        {sortConfig?.key === "Kana" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "▼"}
+                      </label>
+                      <label className="table-sort-text">
                         フリガナ
                       </label>
-                    </label>
+                    </div>
                   </div>
                 </th>
                 <th>
-                  <div className="table-link-box">
-                    <label className="table-link-icon">
-                      <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
-                        <BsFillTriangleFill />
-                      </IconContext.Provider>
-                      <label className="table-link-text">
+                  <div className="table-label" onClick={() => handleSort("Grade")}>
+                    <div className="table-sort-label">
+                      <label className="table-sort-icon">
+                        {sortConfig?.key === "Grade" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "▼"}
+                      </label>
+                      <label className="table-sort-text">
                         学年
                       </label>
-                    </label>
+                    </div>
                   </div>
                 </th>
                 <th>
-                  <div className="table-link-box">
-                    <label className="table-link-icon">
-                      <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
-                        <BsFillTriangleFill />
-                      </IconContext.Provider>
-                      <label className="table-link-text">
+                  <div className="table-label" onClick={() => handleSort("Team")}>
+                    <div className="table-sort-label">
+                      <label className="table-sort-icon">
+                        {sortConfig?.key === "Team" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "▼"}
+                      </label>
+                      <label className="table-sort-text">
                         所属チーム
                       </label>
-                    </label>
+                    </div>
                   </div>
                 </th>
                 <th>
-                  <div className="table-link-box">
-                    <label className="table-link-icon">
-                      <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
-                        <BsFillTriangleFill />
-                      </IconContext.Provider>
-                      <label className="table-link-text">
+                  <div className="table-label">
+                    <label className="table-sort-label">
+                      <label className="table-sort-text">
                         編集
                       </label>
                     </label>
                   </div>
                 </th>
                 <th>
-                  <div className="table-link-box">
-                    <label className="table-link-icon">
-                      <IconContext.Provider value={{ size: '10px' , style:{ color: '#ffffff' , transform: "rotate(180deg)" }}}>
-                        <BsFillTriangleFill />
-                      </IconContext.Provider>
-                      <label className="table-link-text">
+                  <div className="table-label">
+                    <label className="table-sort-label">
+                      <label className="table-sort-text">
                         削除
                       </label>
                     </label>
@@ -505,7 +550,7 @@ function AllList() {
             </thead>
             <tbody>
                {/* 初回表示は `students`、ボタンが押されたら `filteredStudents` でそれぞれ表示する*/}
-              {(selectedTeam ? filteredStudents : students).map((student: any) => (
+              {(sortTable).map((student: any) => (
                 <tr key={student.id}>
                   <td>{student.Name}</td>   {/* データベースから氏名を取得 */}
                   <td>{student.Kana}</td>   {/* データベースからフリガナを取得 */}

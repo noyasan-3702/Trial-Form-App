@@ -2,17 +2,19 @@
 /*================================================================================*/
 /* テーブルアイコン・サブタイトルのレイアウト*/
 
-.table-link-box {
+.table-label {
   display: flex;
   align-items: center; /* 垂直方向に中央揃え */
 }
 
-.table-link-icon {
+.table-sort-label {
   margin: 0 auto;
+  cursor: pointer;
 }
 
-.table-link-text {
-  margin-left: 5px;
+.table-sort-icon, .table-sort-text {
+  margin-right: 5px;
+  cursor: pointer;
 }
 
 .List-area .SubTitle-area {
