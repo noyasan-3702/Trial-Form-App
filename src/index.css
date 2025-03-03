@@ -1,68 +1,83 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/*================================================================================*/
+/* 全体のレイアウト*/
+html, body {
+  height: 100vh; /* 画面の高さを固定 */
+  overflow: hidden; /* スクロールを禁止 */
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+/*================================================================================*/
+/* フォームのレイアウト*/
+.Trial-form {
+  width: 100%;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.Trial-form-backimage {
+  background-repeat:  no-repeat;  /* 画像の繰り返しを指定  */              
+  width:auto; 
+  height:500px;
+  position: relative;
+  z-index: 1;
+}
+.Trial-form-backimage .img1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.Trial-form-backimage .img2 {
+  position: absolute;
+  top: 250px;
+  right: -50px;
 }
 
-button {
+
+.form {
+  position: fixed; 
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 450px;
+  color: #000;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
+  z-index: 100;
+}
+
+.form-area .form-title {
+  margin-bottom: 50px;
+}
+
+.form-input {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 50px;
+}
+
+.form-input .input-title {
+  margin-left: 100px;
+  margin-right: 100px;
+}
+
+.form-input .input-area {
+  margin-left: 100px;
+  margin-right: 100px;
+  width: 100%;
+  font-size: 20px;
+  background-color: #fff;
+  color: #000;
+}
+
+
+.button-area .sendbtn {
+  padding: 10px 15px 10px 15px;
+  background-color:#0277BD;
+  color: #ffffff;
+  border: 1px solid #0277BD;
   border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  letter-spacing: 00.5px;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }

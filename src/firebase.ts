@@ -1,6 +1,6 @@
 // firebase.js
-import firebase from "firebase/app";
-import "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDmCi_b29dzGvaXuKkRNDMK3J2WnSWh4po",
@@ -13,9 +13,7 @@ const firebaseConfig = {
   };
 
 // Firebase を初期化
-firebase.initializeApp(firebaseConfig);
-
-// Firestore インスタンスを作成
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 export default db;
