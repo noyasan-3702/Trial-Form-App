@@ -63,7 +63,6 @@ function App() {
         console.error("データの取得中にエラーが発生しました:", error);
       }
     };
-
     fetchData();  // 関数を実行
   }, []);
 
