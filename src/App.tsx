@@ -96,7 +96,7 @@ function App() {
       // 生徒一覧データベースに生徒の情報を新規追加する
       await addDoc( experiencersDocRef, experiencerData );
 
-      // **students の状態を更新して再レンダリング**
+      // **Experiencers の状態を更新して再レンダリング**
       setExperiencers((prevExperiencers: any) => 
         prevExperiencers.map((Experiencer: { id: string; }) =>
           Experiencer.id === addExperiencer.id ? { ...Experiencer, ...experiencerData } : Experiencer
@@ -128,46 +128,47 @@ function App() {
               <div className="input-title">
                 名前
               </div>
-              <input type="textarea" className="input-area"/>
+              <input name="Name" type="textarea" className="input-area" 
+                value={addExperiencer?.Name} onChange={HandleChange}
+              />
             </div>
             <div className="form-input">
               <div className="input-title">
                 フリガナ
               </div>
-              <input type="textarea" className="input-area"/>
+              <input name="Kana" type="textarea" className="input-area" 
+                value={addExperiencer?.Kana} onChange={HandleChange}
+              />
             </div>
             <div className="form-input">
               <div className="input-title">
                 学年
               </div>
-              <select name="pref" className="input-area">
-                <option value="">選択してください▼</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-                <option>6</option>
-              </select>
+              <input type="number" name="Grade" className="input-area"
+                value={addExperiencer?.Grade} onChange={HandleChange} 
+                min="1" max="6" placeholder="選択してください"
+              />
             </div>
             <div className="form-input">
-              <div className="input-title">チーム名</div>
-                <input list="teams" name="Team" value={addExperiencer?.Team}   
-                  onChange={(e) => {
-                    HandleChange(e);           // 内容を一時保存(配列内に格納)
-                    setTeamName(e.target.value);  // チーム名を取得
-                  }} 
-                  placeholder="選択または入力" className="input-area"
-                />
-                <datalist id="teams">
-                  {teams.map((team: string, index: number) => (
-                    <option key={index} value={team} />
-                  ))}
-                </datalist>
+              <div className="input-title">
+                チーム名
               </div>
+              <input list="teams" name="Team" value={addExperiencer?.Team}   
+                onChange={(e) => {
+                  HandleChange(e);              // 内容を一時保存(配列内に格納)
+                  setTeamName(e.target.value);  // チーム名を取得
+                }} 
+                placeholder="選択または入力" className="input-area"
+              />
+              <datalist id="teams">
+                {teams.map((team: string, index: number) => (
+                  <option key={index} value={team} />
+                ))}
+              </datalist>
+            </div>
             <div className="form-input">
               <div className="input-title">
-                  体験日
+                体験日
               </div>
               <select className="input-area">
                 <option value="">選択してください▼</option>
@@ -178,7 +179,7 @@ function App() {
             </div>
           </div>
           <div className="button-area">
-            <button className="sendbtn">
+            <button className="sendbtn" onChange={HandleSave}>
               申込する
             </button>
           </div>
